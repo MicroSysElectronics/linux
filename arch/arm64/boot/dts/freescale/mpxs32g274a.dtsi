@@ -663,6 +663,25 @@
 
 	};
 
+	pfe0mdiob_pins: pfe0mdiob {
+		pfe0mdiob_grp0 {
+			pinmux = <S32CC_PINMUX(82, FUNC1)>;
+			output-enable;
+			slew-rate = <S32CC_SLEW_208MHZ>;
+		};
+
+		pfe0mdiob_grp1 {
+			pinmux = <S32CC_PINMUX(79, FUNC1)>;
+			output-enable;
+			input-enable;
+			slew-rate = <S32CC_SLEW_208MHZ>;
+		};
+
+		pfe0mdiob_grp2 {
+			pinmux = <S32CC_PINMUX(837, FUNC2)>;
+		};
+	};
+
 	pfe2mdiob_pins: pfe2mdiob {
 		pfe2mdiob_grp0 {
 			pinmux = <S32CC_PINMUX(82, FUNC2)>;

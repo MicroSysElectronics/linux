@@ -732,8 +732,6 @@ static int m88e1510_config_intr(struct phy_device *phydev)
 		if (err < 0)
 			return err;
 
-		err = phy_read(phydev, MII_PHY_COP_IRQ_EN_REG);
-
 		genphy_restart_aneg(phydev);
 	}
 //	else if (phydev->interrupts == PHY_INTERRUPT_DISABLED) {

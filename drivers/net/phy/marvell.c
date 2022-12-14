@@ -641,6 +641,7 @@ static const int m88e1510_interrupt_mask(void)
 {
 	return BIT(14)     // Speed Changed
 		| BIT(13)  // Duplex Changed
+		| BIT(11)  // Auto-Negotiation completed
 		| BIT(10); // Link Status Changed
 }
 
@@ -667,39 +668,51 @@ static int m88e1510_ack_interrupt(struct phy_device *phydev)
 static int m88e1510_unmask_interrupts(struct phy_device *phydev,
 		u16 mask)
 {
-	return phy_write_paged(phydev, MII_MARVELL_COPPER_PAGE,
-			MII_PHY_COP_IRQ_EN_REG, mask);
+	return phy_write(phydev, MII_PHY_COP_IRQ_EN_REG, mask);
 }
 
 static int m88e1510_mask_interrupts(struct phy_device *phydev,
 		u16 mask)
 {
-	return phy_write_paged(phydev, MII_MARVELL_COPPER_PAGE,
-			MII_PHY_COP_IRQ_EN_REG, ~mask);
+	return phy_write(phydev, MII_PHY_COP_IRQ_EN_REG, ~mask);
 }
 
 static int m88e1510_enable_irq(struct phy_device *phydev)
 {
 	int reg;
 
-	reg = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
-			MII_PHY_LED_TIMER_CTRL);
+	reg = marvell_set_page(phydev, MII_MARVELL_LED_PAGE);
 	if (reg < 0)
 		return reg;
 
-	if (!(reg & MII_PHY_IRQ_ENABLE)) {
-		reg |= MII_PHY_IRQ_ENABLE | BIT(11);
-		return phy_write_paged(phydev, MII_MARVELL_LED_PAGE,
-				MII_PHY_LED_TIMER_CTRL, reg);
+	// Switch LED[2] to High-Z state:
+	reg = phy_read(phydev, 16);
+	reg &= ~(0xf << 8);
+	reg |= 0b1010 << 8; // set bits [11:8] to 0xa
+	phy_write(phydev, 16, reg);
+
+	reg = phy_read(phydev, MII_PHY_LED_TIMER_CTRL);
+	if (reg < 0) {
+		marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
+		return reg;
 	}
 
-	return 0;
+	//if (!(reg & MII_PHY_IRQ_ENABLE)) {
+		reg |= MII_PHY_IRQ_ENABLE | BIT(11); // active-low
+		reg = phy_write(phydev, MII_PHY_LED_TIMER_CTRL, reg);
+	//}
+
+	marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
+
+	return reg;
 }
 
 static int m88e1510_config_intr(struct phy_device *phydev)
 {
 	int err = 0;
 	int reg;
+
+	marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
 
 	// mask/disable all IRQs:
 	err = m88e1510_mask_interrupts(phydev,
@@ -718,6 +731,8 @@ static int m88e1510_config_intr(struct phy_device *phydev)
 				m88e1510_interrupt_mask());
 		if (err < 0)
 			return err;
+
+		err = phy_read(phydev, MII_PHY_COP_IRQ_EN_REG);
 
 		genphy_restart_aneg(phydev);
 	}
@@ -3763,9 +3778,9 @@ static struct phy_driver marvell_drivers[] = {
 		.config_init = m88e1510_config_init,
 		.config_aneg = m88e1510_config_aneg,
 		.read_status = marvell_read_status,
-		.ack_interrupt = marvell_ack_interrupt,
+		.ack_interrupt = m88e1510_ack_interrupt,
 		.config_intr = m88e1510_config_intr,
-		.did_interrupt = m88e1121_did_interrupt,
+		.did_interrupt = m88e1510_did_interrupt,
 		.get_wol = m88e1318_get_wol,
 		.set_wol = m88e1318_set_wol,
 		.resume = marvell_resume,

@@ -685,11 +685,17 @@ static int m88e1510_enable_irq(struct phy_device *phydev)
 	if (reg < 0)
 		return reg;
 
-	// Switch LED[2] to High-Z state:
+	// Switch LED[2] to Force On:
 	reg = phy_read(phydev, 16);
 	reg &= ~(0xf << 8);
-	reg |= 0b1010 << 8; // set bits [11:8] to 0xa
+	reg |= 0b1001 << 8;
 	phy_write(phydev, 16, reg);
+
+	// Switch LED[2] to On - drive low:
+	reg = phy_read(phydev, 17);
+	reg &= ~(0x3 << 4);
+	reg |= 0b10 << 4;
+	phy_write(phydev, 17, reg);
 
 	reg = phy_read(phydev, MII_PHY_LED_TIMER_CTRL);
 	if (reg < 0) {
@@ -697,10 +703,8 @@ static int m88e1510_enable_irq(struct phy_device *phydev)
 		return reg;
 	}
 
-	//if (!(reg & MII_PHY_IRQ_ENABLE)) {
-		reg |= MII_PHY_IRQ_ENABLE | BIT(11); // active-low
-		reg = phy_write(phydev, MII_PHY_LED_TIMER_CTRL, reg);
-	//}
+	reg |= MII_PHY_IRQ_ENABLE | BIT(11); // active-low
+	reg = phy_write(phydev, MII_PHY_LED_TIMER_CTRL, reg);
 
 	marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
 
@@ -734,12 +738,6 @@ static int m88e1510_config_intr(struct phy_device *phydev)
 
 		genphy_restart_aneg(phydev);
 	}
-//	else if (phydev->interrupts == PHY_INTERRUPT_DISABLED) {
-//
-//		err = marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
-//		if (err < 0)
-//			return err;
-//	}
 
 	return err;
 }
@@ -801,7 +799,7 @@ static void marvell_config_led(struct phy_device *phydev)
 	// LED[1]: link
 	def_config &= ~(0xf<<4);
 	def_config |= (0b0110 << 4);
-	// LED[2]: High-Z
+	// LED[2]: Force High-Z
 	def_config &= ~(0xf << 8);
 	def_config |= 0b1010 << 8;
 	break;

@@ -1,0 +1,332 @@
+/*
+ * Device Tree Include file for Freescale Layerscape-1046A family SoC.
+ *
+ * Copyright 2016, Freescale Semiconductor, Inc.
+ * (C) Copyright 2018 MicroSys Electronics GmbH
+ *
+ * Mingkai Hu <mingkai.hu@nxp.com>
+ *
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPLv2 or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ *  a) This library is free software; you can redistribute it and/or
+ *     modify it under the terms of the GNU General Public License as
+ *     published by the Free Software Foundation; either version 2 of the
+ *     License, or (at your option) any later version.
+ *
+ *     This library is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ * Or, alternatively,
+ *
+ *  b) Permission is hereby granted, free of charge, to any person
+ *     obtaining a copy of this software and associated documentation
+ *     files (the "Software"), to deal in the Software without
+ *     restriction, including without limitation the rights to use,
+ *     copy, modify, merge, publish, distribute, sublicense, and/or
+ *     sell copies of the Software, and to permit persons to whom the
+ *     Software is furnished to do so, subject to the following
+ *     conditions:
+ *
+ *     The above copyright notice and this permission notice shall be
+ *     included in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *     OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/dts-v1/;
+
+#include "fsl-ls1046a.dtsi"
+#include "qoriq-qman-portals-sdk.dtsi"
+#include "qoriq-bman-portals-sdk.dtsi"
+
+/ {
+	model = "MPXLS1046/CRX06";
+	compatible = "fsl,ls1046a-rdb", "fsl,ls1046a";
+
+	aliases {
+
+		serial0 = &duart0;
+		serial1 = &duart1;
+		serial2 = &duart2;
+		serial3 = &duart3;
+
+		mdio0 = &mdio0;
+		mdio1 = &xmdio0;
+
+		tgec0 = &enet6;
+		tgec1 = &enet7;
+
+		crypto = &crypto;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};
+
+&bman_fbpr {
+	compatible = "fsl,bman-fbpr";
+	alloc-ranges = <0 0 0x10000 0>;
+};
+&qman_fqd {
+	compatible = "fsl,qman-fqd";
+	alloc-ranges = <0 0 0x10000 0>;
+};
+&qman_pfdr {
+	compatible = "fsl,qman-pfdr";
+	alloc-ranges = <0 0 0x10000 0>;
+};
+
+&esdhc {
+	compatible = "microsys,mpxls1046-esdhc", "fsl,ls1046a-esdhc", "fsl,esdhc";
+	mmc-hs200-1_8v;
+};
+
+&duart0 {
+	status = "okay";
+};
+
+&duart1 {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+
+	temp-sensor@4c {
+		compatible = "national,lm90";
+		reg = <0x4c>;
+	};
+	eeprom@50 {
+		compatible = "at24,24c128";
+		reg = <0x50>;
+	};
+
+	eeprom@57 {
+		compatible = "at24,24c128";
+		reg = <0x57>;
+	};
+
+	rtc@32 {
+		compatible = "epson,rx8581";
+		reg = <0x32>;
+	};
+};
+
+&i2c1 {
+	status = "okay";
+
+};
+
+&ifc {
+	#address-cells = <2>;
+	#size-cells = <1>;
+
+	/* NAND Flashe and CPLD on board */
+	ranges = <0x0 0x0 0x0 0x7e800000 0x00010000>;
+
+	status = "okay";
+
+		nand0: nand@0,0 {
+			compatible = "fsl,ifc-nand";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			reg = <0x0 0x0 0x10000>;
+		};
+};
+
+&qspi {
+	num-cs = <1>;
+	bus-num = <0>;
+	status = "okay";
+
+	qflash0: s25fs512s@0 {
+		compatible = "spansion,m25p80";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		spi-max-frequency = <20000000>;
+		m25p,fast-read;
+		reg = <0>;
+	};
+
+};
+
+&nand0 {
+		partition@0 {
+			reg = <0x0 0x20000000>;
+			label = "rootfs";
+		};
+};
+
+&qflash0 {
+		partition@0 {
+			reg = <0x0 0x2000>;
+			label = "rcw";
+		};
+		partition@1 {
+			reg = <0x2000 0xe000>;
+			label = "ppa";
+		};
+		partition@2 {
+			reg = <0x10000 0xa000>;
+			label = "fman";
+		};
+		partition@3 {
+			reg = <0x100000 0x100000>;
+			label = "u-boot";
+		};
+		partition@4 {
+			reg = <0x300000 0x2000>;
+			label = "env";
+		};
+		partition@5 {
+			reg = <0x500000 0xb00000>;
+			label = "kernel";
+		};
+};
+
+&dspi {
+    num-cs = <2>;
+    bus-num = <0>;
+    status = "okay";
+
+	spidev@0x01 {
+	compatible = "fsl,sja1105";
+        spi-max-frequency = <17000000>;
+        spi-cpha;
+        reg = <1>;
+        fsl,spi-sck-cs-delay = <25>;
+        fsl,spi-cs-sck-delay = <25>;
+	};
+
+	spidev@0x02 {
+	compatible = "fsl,sja1105";
+        spi-max-frequency = <17000000>;
+        spi-cpha;
+        reg = <2>;
+        fsl,spi-sck-cs-delay = <25>;
+        fsl,spi-cs-sck-delay = <25>;
+    };
+};
+
+#include "fsl-ls1046-post.dtsi"
+&soc {
+#include "qoriq-dpaa-eth.dtsi"
+#include "qoriq-fman3-0-6oh.dtsi"
+};
+
+&mdio0 {
+
+	tsn1_phy0: ethernet-phy@0 {
+		reg = <0x0>;
+	};
+
+	tsn1_phy1: ethernet-phy@1 {
+		reg = <0x1>;
+	};
+
+	tsn1_phy2: ethernet-phy@2 {
+		reg = <0x2>;
+	};
+
+	tsn1_phy3: ethernet-phy@3 {
+		reg = <0x3>;
+	};
+
+	tsn2_phy0: ethernet-phy@4 {
+		reg = <0x4>;
+	};
+
+	tsn2_phy1: ethernet-phy@5 {
+		reg = <0x5>;
+	};
+
+	tsn2_phy2: ethernet-phy@6 {
+		reg = <0x6>;
+	};
+
+	tsn2_phy3: ethernet-phy@7 {
+		reg = <0x7>;
+	};
+
+	qsgmii1_phy0: ethernet-phy@8 {
+		reg = <0x8>;
+	};
+
+	qsgmii1_phy1: ethernet-phy@9 {
+		reg = <0x9>;
+	};
+
+	qsgmii1_phy2: ethernet-phy@a {
+		reg = <0xa>;
+	};
+
+	qsgmii1_phy3: ethernet-phy@b {
+		reg = <0xb>;
+	};
+
+	qsgmii2_phy0: ethernet-phy@c {
+		reg = <0xc>;
+	};
+
+	qsgmii2_phy1: ethernet-phy@d {
+		reg = <0xd>;
+	};
+
+	qsgmii2_phy2: ethernet-phy@e {
+		reg = <0xe>;
+	};
+
+	qsgmii2_phy3: ethernet-phy@f {
+		reg = <0xf>;
+	};
+
+};
+
+&fsldpaa {
+	ethernet@9 {
+		compatible = "fsl,dpa-ethernet";
+		fsl,fman-mac = <&enet7>;
+		dma-coherent;
+	};
+};
+
+&fman0 {
+
+	compatible = "fsl,fman", "simple-bus";
+
+	ethernet@e4000 {
+		phy-connection-type = "rgmii";
+		status = "okay";
+		fixed-link {
+			full-duplex;
+			speed = <1000>;
+			pause;
+			asym-pause;
+		};
+	};
+
+	ethernet@e6000 {
+		phy-connection-type = "rgmii";
+		status = "okay";
+		fixed-link {
+			full-duplex;
+			speed = <1000>;
+			pause;
+			asym-pause;
+		};
+	};
+
+};

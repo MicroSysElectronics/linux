@@ -1,0 +1,128 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree file for MPXLS1088/CRX05 Board.
+ *
+ * Copyright 2019 NXP
+ * Copyright (C) 2019 MicroSys Electronics GmbH
+ *
+ */
+
+/dts-v1/;
+
+#include "fsl-ls1088a.dtsi"
+
+/ {
+	model = "MPXLS1088/CRX05";
+	compatible = "fsl,ls1088a-rdb", "fsl,ls1088a";
+
+	aliases {
+		ethernet0 = &dpmac2; /* DPMAC2 */
+		ethernet1 = &dpmac3; /* DPMAC3 */
+		ethernet2 = &dpmac4; /* DPMAC4 */
+		ethernet3 = &dpmac7; /* DPMAC7 */
+
+		serial0 = &duart0;
+		serial1 = &duart1;
+
+		mdio0 = &emdio1;
+		mdio1 = &emdio2;
+
+		crypto = &crypto;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};
+
+&duart0 {
+	status = "okay";
+};
+
+&duart1 {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&esdhc {
+	status = "okay";
+};
+
+&sata {
+	status = "okay";
+};
+
+#include "mpxls1088_common.dtsi"
+#include "mpxls10xx_crx05.dtsi"
+
+&emdio1 {
+	status = "okay";
+};
+
+&emdio2 {
+};
+
+&dpmac1 {
+	status = "disabled";
+};
+
+&dpmac2 {
+	phy-handle = <&sgmii_phy3>;
+	phy-connection-type = "sgmii";
+	pcs-handle = <&pcs2>;
+};
+
+&dpmac3 {
+	phy-handle = <&sgmii_phy2>;
+	phy-connection-type = "sgmii";
+	pcs-handle = <&pcs3_0>;
+};
+
+&dpmac4 {
+	phy-handle = <&rgmii_phy1>;
+	phy-connection-type = "rgmii";
+	pcs-handle = <&pcs3_1>;
+};
+
+&dpmac5 {
+	status = "disabled";
+};
+
+&dpmac6 {
+	status = "disabled";
+};
+
+&dpmac7 {
+	phy-handle = <&sgmii_phy1>;
+	phy-connection-type = "sgmii";
+	pcs-handle = <&pcs7_0>;
+};
+
+&dpmac8 {
+	status = "disabled";
+};
+&dpmac9 {
+	status = "disabled";
+};
+&dpmac10 {
+	status = "disabled";
+};
+
+&pcs_mdio2 {
+    status = "okay";
+};
+
+&pcs_mdio3 {
+    status = "okay";
+};
+
+&pcs_mdio7 {
+    status = "okay";
+};

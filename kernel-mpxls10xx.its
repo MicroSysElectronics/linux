@@ -1,0 +1,126 @@
+/*
+ * Copyright (C) 2015, Freescale Semiconductor
+ * (C) Copyright 2018 MicroSys Electronics GmbH
+ *
+ * Mingkai Hu <Mingkai.hu@freescale.com>
+ * Hou Zhiqiang <B48286@freescale.com>
+ *
+ * This file is licensed under the terms of the GNU General Public
+ * License version 2.  This program is licensed "as is" without any
+ * warranty of any kind, whether express or implied.
+ */
+
+/dts-v1/;
+
+/ {
+	description = "Image file for the MPXLS10xx Linux Kernel";
+	#address-cells = <1>;
+
+	images {
+		kernel-mpx10xx {
+			description = "ARM64 Linux kernel";
+			data = /incbin/("./arch/arm64/boot/Image.gz");
+			type = "kernel";
+			arch = "arm64";
+			os = "linux";
+			compression = "gzip";
+			load  = <0x81200000>;
+			entry = <0x81200000>;
+		};
+		fdt-mpxls1046 {
+			description = "MPXLS1046/CRX05 Flattened Device Tree blob";
+			data = /incbin/("./arch/arm64/boot/dts/freescale/mpxls1046.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x90000000>;
+		};
+		fdt-mpxls1046_crx06_xfi {
+			description = "MPXLS1046/CRX06/XFI Flattened Device Tree blob";
+			data = /incbin/("./arch/arm64/boot/dts/freescale/mpxls1046_crx06_xfi.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x90000000>;
+		};
+		fdt-mpxls1046_crx06_qsgmii {
+			description = "MPXLS1046/CRX06/QSGMII Flattened Device Tree blob";
+			data = /incbin/("./arch/arm64/boot/dts/freescale/mpxls1046_crx06_qsgmii.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x90000000>;
+		};
+		fdt-mpxls1043 {
+			description = "MPXLS1043/CRX05 Flattened Device Tree blob";
+			data = /incbin/("./arch/arm64/boot/dts/freescale/mpxls1043.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x90000000>;
+		};
+		fdt-mpxls1088_crx05 {
+			description = "MPXLS1088/CRX05 Flattened Device Tree blob";
+			data = /incbin/("./arch/arm64/boot/dts/freescale/mpxls1088_crx05.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x90000000>;
+		};
+		fdt-mpxls1088_crx06_2qsgmii {
+			description = "MPXLS1088/CRX06/2QSGMII Flattened Device Tree blob";
+			data = /incbin/("./arch/arm64/boot/dts/freescale/mpxls1088_crx06_2qsgmii.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x90000000>;
+		};
+		fdt-mpxls1088_crx06_2tsn {
+			description = "MPXLS1088/CRX06/2TSN Flattened Device Tree blob";
+			data = /incbin/("./arch/arm64/boot/dts/freescale/mpxls1088_crx06_2tsn.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x90000000>;
+		};
+	};
+
+	configurations {
+		default = "mpxls1046";
+		mpxls1046 {
+			description = "MPXLS1046/CRX05 Linux Kernel";
+			kernel = "kernel-mpx10xx";
+			fdt = "fdt-mpxls1046";
+		};
+		mpxls1046_crx06_xfi {
+			description = "MPXLS1046/CRX06 Linux Kernel XFI";
+			kernel = "kernel-mpx10xx";
+			fdt = "fdt-mpxls1046_crx06_xfi";
+		};
+		mpxls1046_crx06_qsgmii {
+			description = "MPXLS1046/CRX06 Linux Kernel QSGMII";
+			kernel = "kernel-mpx10xx";
+			fdt = "fdt-mpxls1046_crx06_qsgmii";
+		};
+		mpxls1043 {
+			description = "MPXLS1043/CRX05 Linux Kernel";
+			kernel = "kernel-mpx10xx";
+			fdt = "fdt-mpxls1043";
+		};
+		mpxls1088 {
+			description = "MPXLS1088/CRX05 Linux Kernel";
+			kernel = "kernel-mpx10xx";
+			fdt = "fdt-mpxls1088_crx05";
+		};
+		mpxls1088_crx06_2qsgmii {
+			description = "MPXLS1088/CRX06 Linux Kernel 2xQSGMII";
+			kernel = "kernel-mpx10xx";
+			fdt = "fdt-mpxls1088_crx06_2qsgmii";
+		};
+		mpxls1088_crx06_2tsn {
+			description = "MPXLS1088/CRX06 Linux Kernel 2xTSN";
+			kernel = "kernel-mpx10xx";
+			fdt = "fdt-mpxls1088_crx06_2tsn";
+		};
+	};
+};

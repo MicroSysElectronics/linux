@@ -1,0 +1,223 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree file for MPXLS1088/CRX05 Board.
+ *
+ * Copyright 2019 NXP
+ * Copyright (C) 2019 MicroSys Electronics GmbH
+ *
+ */
+
+/dts-v1/;
+
+#include "fsl-ls1088a.dtsi"
+
+/ {
+	model = "MPXLS1088/CRX06/2TSN";
+	compatible = "fsl,ls1088a-rdb", "fsl,ls1088a";
+
+	aliases {
+		ethernet0 = &dpmac1;
+		ethernet1 = &dpmac2;
+		ethernet2 = &dpmac3;
+		ethernet3 = &dpmac4;
+		ethernet4 = &dpmac5;
+		ethernet5 = &dpmac7;
+		ethernet6 = &dpmac8;
+		ethernet7 = &dpmac9;
+		ethernet8 = &dpmac10;
+
+		serial0 = &duart0;
+		serial1 = &duart1;
+
+		crypto = &crypto;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};
+
+&duart0 {
+	status = "okay";
+};
+
+&duart1 {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&esdhc {
+	status = "okay";
+};
+
+&sata {
+	status = "okay";
+};
+
+#include "mpxls1088_common.dtsi"
+
+&qspi {
+	status = "okay";
+};
+
+&dspi {
+	num-cs = <2>;
+	bus-num = <0>;
+	status = "okay";
+
+	spidev@1 {
+	compatible = "nxp,sja1105t";
+        spi-max-frequency = <17000000>;
+        spi-cpha;
+        reg = <1>;
+        fsl,spi-sck-cs-delay = <25>;
+        fsl,spi-cs-sck-delay = <25>;
+    };
+
+	spidev@2 {
+	compatible = "nxp,sja1105t";
+        spi-max-frequency = <17000000>;
+        spi-cpha;
+        reg = <2>;
+        fsl,spi-sck-cs-delay = <25>;
+        fsl,spi-cs-sck-delay = <25>;
+    };
+};
+
+&emdio1 {
+
+	tsn1_phy0: ethernet-phy@0 {
+		reg = <0x0>;
+	};
+
+	tsn1_phy1: ethernet-phy@1 {
+		reg = <0x1>;
+	};
+
+	tsn1_phy2: ethernet-phy@2 {
+		reg = <0x2>;
+	};
+
+	tsn1_phy3: ethernet-phy@3 {
+		reg = <0x3>;
+	};
+
+	tsn2_phy0: ethernet-phy@4 {
+		reg = <0x4>;
+	};
+
+	tsn2_phy1: ethernet-phy@5 {
+		reg = <0x5>;
+	};
+
+	tsn2_phy2: ethernet-phy@6 {
+		reg = <0x6>;
+	};
+
+	tsn2_phy3: ethernet-phy@7 {
+		reg = <0x7>;
+	};
+
+	qsgmii1_phy0: ethernet-phy@8 {
+		reg = <0x8>;
+	};
+
+	qsgmii1_phy1: ethernet-phy@9 {
+		reg = <0x9>;
+	};
+
+	qsgmii1_phy2: ethernet-phy@a {
+		reg = <0xa>;
+	};
+
+	qsgmii1_phy3: ethernet-phy@b {
+		reg = <0xb>;
+	};
+
+	qsgmii2_phy0: ethernet-phy@c {
+		reg = <0xc>;
+	};
+
+	qsgmii2_phy1: ethernet-phy@d {
+		reg = <0xd>;
+	};
+
+	qsgmii2_phy2: ethernet-phy@e {
+		reg = <0xe>;
+	};
+
+	qsgmii2_phy3: ethernet-phy@f {
+		reg = <0xf>;
+	};
+
+};
+
+&emdio2 {
+		xgmii_phy10: ethernet-phy@10 {
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reg = <0x10>;
+			phy-connection-type = "xgmii";
+		};
+		xgmii_phy11: ethernet-phy@11 {
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reg = <0x11>;
+			phy-connection-type = "xgmii";
+		};
+};
+
+&dpmac1 {
+	phy-handle = <&xgmii_phy10>;
+};
+
+&dpmac2 {
+	phy-handle = <&xgmii_phy11>;
+};
+
+&dpmac3 {
+	phy-handle = <&qsgmii1_phy0>;
+};
+
+&dpmac4 {
+	phy-connection-type = "rgmii";
+	status = "okay";
+	fixed-link {
+		full-duplex;
+		speed = <1000>;
+		pause;
+		asym-pause;
+	};
+};
+
+&dpmac5 {
+	phy-connection-type = "rgmii";
+	status = "okay";
+	fixed-link {
+		full-duplex;
+		speed = <1000>;
+		pause;
+		asym-pause;
+	};
+};
+
+&dpmac7 {
+	phy-handle = <&qsgmii2_phy0>;
+};
+
+&dpmac8 {
+	phy-handle = <&qsgmii2_phy1>;
+};
+
+&dpmac9 {
+	phy-handle = <&qsgmii2_phy2>;
+};
+
+&dpmac10 {
+	phy-handle = <&qsgmii2_phy3>;
+};

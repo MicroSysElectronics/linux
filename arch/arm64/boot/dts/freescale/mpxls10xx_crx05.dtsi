@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree file for MPXLS10xx modules on CRX05.
+ *
+ * Copyright 2018 MicroSys Electronics GmbH
+ *
+ * Kay Potthoff <Kay.Potthoff@microsys.de>
+ *
+ */
+
+&mdio0 {
+		status = "okay";
+		rgmii_phy1: ethernet-phy@3 {
+			reg = <0x3>;
+			phy-connection-type = "rgmii";
+			status = "okay";
+		};
+		sgmii_phy1: ethernet-phy@2 {
+			reg = <0x2>;
+			phy-connection-type = "sgmii";
+			status = "okay";
+		};
+		sgmii_phy2: ethernet-phy@1 {
+			reg = <0x1>;
+			phy-connection-type = "sgmii";
+			status = "okay";
+		};
+		sgmii_phy3: ethernet-phy@0 {
+			reg = <0x0>;
+			phy-connection-type = "sgmii";
+			status = "okay";
+		};
+};

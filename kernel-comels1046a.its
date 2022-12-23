@@ -1,0 +1,48 @@
+/dts-v1/;
+
+/ {
+        description = "U-Boot fitImage for comels1046a";
+        #address-cells = <2>;
+        #size-cells = <1>;
+
+        images {
+                kernel-microsys_comels1046a {
+                        reg = <0x00 0x80080000 0x00>;
+                        description = "Linux kernel";
+                        data = /incbin/("arch/arm64/boot/Image");
+                        type = "kernel";
+                        arch = "arm64";
+                        os = "linux";
+                        compression = "none";
+                        load = <0x80080000>;
+                        entry = <0x80080000>;
+                        hash-1 {
+                            algo = "sha1";
+                        };
+                };
+                fdt-microsys_comels1046a-ritec.dtb {
+                        reg = <0x00 0x90000000 0x00>;
+                        description = "Flattened Device Tree blob";
+                        data = /incbin/("arch/arm64/boot/dts/freescale/comels1046a-ritec.dtb");
+                        type = "flat_dt";
+                        arch = "arm64";
+                        compression = "none";
+                        load = <0x90000000>;
+                        hash-1 {
+                            algo = "sha1";
+                        };
+                };
+        };
+
+        configurations {
+            default = "conf-microsys_comels1046a-ritec.dtb";
+            conf-microsys_comels1046a-ritec.dtb {
+                description = "1 Linux kernel, FDT blob";
+                kernel = "kernel-microsys_comels1046a";
+                fdt = "fdt-microsys_comels1046a-ritec.dtb";
+                hash-1 {
+                    algo = "sha1";
+                };
+            };
+        };
+};

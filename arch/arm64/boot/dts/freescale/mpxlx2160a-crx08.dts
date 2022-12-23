@@ -1,0 +1,415 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+//
+// Device Tree file for MPXLX2160A/CRX08
+//
+// Copyright 2018-2019 NXP
+// Copyright (C) 2020 MicroSys Electronics GmbH
+
+/dts-v1/;
+
+#include "fsl-lx2160a.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/net/ti-dp83867.h>
+
+/ {
+	model = "MPX-LX2160A/CRX08";
+	compatible = "fsl,lx2160a-rdb", "fsl,lx2160a";
+
+	aliases {
+		crypto = &crypto;
+		serial0 = &uart0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+
+    sfp_eth1: sfp-eth1 {
+		compatible = "sff,sfp";
+		i2c-bus = <&sfp_p1>;
+		tx-disable-gpios = <&gpio_exp 8 GPIO_ACTIVE_HIGH>;
+		tx-fault-gpios = <&gpio_exp 0 GPIO_ACTIVE_HIGH>;
+		mod-def0-gpios = <&gpio_exp 1 GPIO_ACTIVE_LOW>;
+		los-gpios = <&gpio_exp 2 GPIO_ACTIVE_HIGH>;
+        maximum-power-milliwatt = <2000>;
+		/* enabled by U-Boot if SFP module is present */
+		status = "okay";
+	};
+
+    sfp_eth2: sfp-eth2 {
+		compatible = "sff,sfp";
+		i2c-bus = <&sfp_p2>;
+		tx-disable-gpios = <&gpio_exp 9 GPIO_ACTIVE_HIGH>;
+		tx-fault-gpios = <&gpio_exp 3 GPIO_ACTIVE_HIGH>;
+		mod-def0-gpios = <&gpio_exp 4 GPIO_ACTIVE_LOW>;
+		los-gpios = <&gpio_exp 5 GPIO_ACTIVE_HIGH>;
+        maximum-power-milliwatt = <2000>;
+		/* enabled by U-Boot if SFP module is present */
+		status = "okay";
+	};
+
+    sfp_eth3: sfp-eth3 {
+		compatible = "sff,sfp";
+		i2c-bus = <&sfp_p3>;
+		mod-def0-gpios = <&gpio_exp 12 GPIO_ACTIVE_LOW>;
+		/* enabled by U-Boot if SFP module is present */
+		status = "okay";
+	};
+
+};
+
+&can0 {
+	status = "okay";
+
+	can-transceiver {
+		max-bitrate = <5000000>;
+	};
+};
+
+&can1 {
+	status = "okay";
+
+	can-transceiver {
+		max-bitrate = <5000000>;
+	};
+};
+
+&crypto {
+	status = "okay";
+};
+
+&emdio2 {
+	status = "okay";
+};
+
+&esdhc0 {
+	bus-width = <4>;
+	status = "okay";
+};
+
+&esdhc1 {
+	bus-width = <8>;
+	status = "okay";
+};
+
+&fspi {
+	status = "okay";
+
+	mt35xu512aba0: flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spansion,m25p80";
+		m25p,fast-read;
+		spi-max-frequency = <1000000000>;
+		reg = <0>;
+		spi-rx-bus-width = <8>;
+		spi-tx-bus-width = <8>;
+
+        partition@0 {
+            reg = <0xD00000 0x1000000>;
+            label = "fspi0";
+        };
+	};
+
+	mt35xu512aba1: flash@1 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spansion,m25p80";
+		m25p,fast-read;
+		spi-max-frequency = <100000000>;
+		reg = <1>;
+		spi-rx-bus-width = <8>;
+		spi-tx-bus-width = <8>;
+
+        partition@0 {
+            reg = <0xD00000 0x1000000>;
+            label = "fspi1";
+        };
+	};
+};
+
+&dspi2 {
+	status = "okay";
+};
+
+&gpio3 {
+    status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+
+	temp-sensor@48 {
+        compatible = "nxp,sa56004";
+        reg = <0x48>;                       //next to CPU die 2
+    };
+
+    temp-sensor@4a {
+        compatible = "nxp,sa56004";
+        reg = <0x4a>;                       //next to DRAM
+    };
+
+    temp-sensor@4c {
+        compatible = "nxp,sa56004";
+        reg = <0x4c>;                       //next to CPU
+    };
+
+	eeprom@50 {
+		compatible = "atmel,24c01a";
+		reg = <0x50>;
+	};
+	eeprom@55 {
+		compatible = "atmel,24c01a";
+		reg = <0x55>;
+	};
+	pcf85063@51 {
+		compatible = "pcf85063";
+		reg = <0x51>;
+	};
+	gpio_exp: max7325@69 {
+		compatible = "maxim,max7325";
+		reg = <0x69>;
+		gpio-controller;
+		#gpio-cells = <2>;
+    };
+};
+
+&gpio_exp {
+	status = "okay";
+};
+
+&i2c1 {
+	status = "okay";
+};
+
+&i2c2 {
+	status = "okay";
+};
+
+&i2c3 {
+	status = "okay";
+};
+
+&i2c4 {
+	status = "okay";
+};
+
+&i2c5 {
+	status = "okay";
+	tca9544@70 {
+		compatible = "nxp,pca9544";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x70>;
+
+		sfp_p1: i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+			status = "okay";
+		};
+
+		sfp_p2: i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+			status = "okay";
+		};
+
+		sfp_p3: i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+		};
+
+		i2c@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+		};
+	};
+
+	usbhub@71 {
+		reg = <0x71>;
+	};
+};
+
+&i2c6 {
+	status = "okay";
+
+
+};
+
+&i2c7 {
+	status = "okay";
+};
+
+&sata0 {
+	status = "okay";
+};
+
+&sata1 {
+	status = "okay";
+};
+
+&sata2 {
+	status = "okay";
+};
+
+&sata3 {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+	dr_mode = "host";
+};
+
+&usb1 {
+	status = "okay";
+	dr_mode = "otg";
+};
+
+
+&dpmac17 {
+    status = "okay";
+	phy-handle = <&rgmii_phy1>;
+	phy-connection-type = "rgmii-id";
+};
+
+&dpmac18 {
+    status = "okay";
+	phy-handle = <&rgmii_phy2>;
+	phy-connection-type = "rgmii-id";
+};
+
+
+&emdio1 {
+	status = "okay";
+    rgmii_phy1: ethernet-phy@1 {
+		reg = <0x0>;              /* 1Gbit RGMII */
+	};
+	rgmii_phy2: ethernet-phy@2 {
+		reg = <0x1>;              /* 1Gbit RGMII */
+	};
+};
+
+
+&emdio2 {
+	status = "okay";
+    usxgmii1: phy@10 {
+		compatible = "ethernet-phy-ieee802.3-c45";    /* 10Gbit RJ45 */
+        reg = <0x10>;
+    };
+
+    usxgmii2: phy@11 {
+		compatible = "ethernet-phy-ieee802.3-c45";    /* 10Gbit RJ45 */
+        reg = <0x11>;
+    };
+};
+
+
+&dpmac1 {
+    status = "disabled";
+};
+
+&dpmac2 {
+	status = "disabled";
+};
+
+&dpmac3 {
+	status = "okay";
+	phy-connection-type = "usxgmii";
+	phy-handle = <&usxgmii1>;
+};
+
+&dpmac4 {
+	status = "okay";
+	phy-connection-type = "usxgmii";
+	phy-handle = <&usxgmii2>;
+};
+
+&dpmac5 {
+	compatible = "ethernet-phy-ieee802.3-c45";
+	status = "okay";
+	phy-connection-type = "caui";
+	sfp = <&sfp_eth1>;
+	managed = "in-band-status";
+
+};
+
+&dpmac6 {
+	compatible = "ethernet-phy-ieee802.3-c45";
+	status = "okay";
+	phy-connection-type = "caui";
+	sfp = <&sfp_eth2>;
+	managed = "in-band-status";
+};
+
+&dpmac7 {
+    status = "disabled";
+};
+
+&dpmac8 {
+    status = "disabled";
+};
+
+&dpmac9 {
+    status = "disabled";
+};
+
+&dpmac10 {
+    status = "disabled";
+};
+
+
+&pcs_mdio3 {
+	status = "okay";
+};
+
+&pcs_mdio4 {
+	status = "okay";
+};
+
+
+&pcs_mdio5 {
+	status = "okay";
+};
+
+
+&pcs_mdio6 {
+	status = "okay";
+};
+
+&pcs_mdio17 {
+	status = "okay";
+};
+
+&pcs_mdio18 {
+	status = "okay";
+};
+
+&pcs5 {
+	status = "okay";
+};
+
+&pcs6 {
+	status = "okay";
+};
